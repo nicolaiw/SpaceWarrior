@@ -72,7 +72,6 @@
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\ModelBase.cs" />
     <Compile Include="Properties\Annotations1.cs" />
-    <Compile Include="Properties\Annotations2.cs" />
     <Compile Include="PropertyChangedImplementation.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">
