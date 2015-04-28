@@ -71,6 +71,9 @@
     <Compile Include="Entities\Bullet.cs" />
     <Compile Include="Entities\Enemy.cs" />
     <Compile Include="Entities\ModelBase.cs" />
+    <Compile Include="MenuWindow.xaml.cs">
+      <DependentUpon>MenuWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="PropertyChangedImplementation.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -87,6 +90,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MenuWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -1,20 +1,13 @@
 ﻿using System.Threading;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
-using SpaceWarrior.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SpaceWarrior.ViewModels;
 
@@ -42,7 +35,7 @@ namespace SpaceWarrior
 
             _viewModel = new MainViewModel(
                 0.0,
-                (this.Height / 2) - (_bulletImg.Height/2),
+                (this.Height / 2) - (_bulletImg.Height / 2),
                 PlayerModelHitBox.Width,
                 PlayerModelHitBox.Height,
                 792.0,
@@ -51,21 +44,33 @@ namespace SpaceWarrior
                 600.0,
                 (d) => Dispatcher.Invoke(() => Canvas.SetLeft(PlayerModelHitBox, d)),
                 (d) => Dispatcher.Invoke(() => Canvas.SetTop(PlayerModelHitBox, d)),
-                _bulletImg.Width, 
+                _bulletImg.Width,
                 _bulletImg.Height);
-
 
             _cts = new CancellationTokenSource();
             _ct = _cts.Token;
 
+            this.KeyDown += MainWindow_KeyDown;
             DataContext = _viewModel;
 
             _viewModel.RunWorker();
             RunKeyListener();
         }
 
+        void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                var menuCtrl = new MenuWindow(
+                    () => MessageBox.Show("Exit"),
+                    () => MessageBox.Show("Resume")
+                    );
+                menuCtrl.ShowDialog();
+            }
+        }
+
         //kleine Hilfsmethode
-        private Tuple<Action<double>, Action<double>, Action>  GetNewBulletModelMoveActions()
+        private Tuple<Action<double>, Action<double>, Action> GetNewBulletModelMoveActions()
         {
             var bullet = new Rectangle
                          {
@@ -76,12 +81,12 @@ namespace SpaceWarrior
 
 
             MainCanvas.Children.Add(bullet);
-            Canvas.SetZIndex(bullet,0);
+            Canvas.SetZIndex(bullet, 0);
             //Canvas.SetLeft(bullet, Canvas.GetLeft(PlayerModelHitBox));
             //Canvas.SetTop(bullet, Canvas.GetTop(PlayerModelHitBox));
 
             return new Tuple<Action<double>, Action<double>, Action>(
-                (d) => Dispatcher.Invoke(()=> Canvas.SetLeft(bullet,d)),
+                (d) => Dispatcher.Invoke(() => Canvas.SetLeft(bullet, d)),
                 (d) => Dispatcher.Invoke(() => Canvas.SetTop(bullet, d)),
                 () => Dispatcher.Invoke(() => MainCanvas.Children.Remove(bullet)));
         }
@@ -101,7 +106,7 @@ namespace SpaceWarrior
 
                                                  Dispatcher.Invoke(() =>
                                                                    {
-                                                                       if(!Keyboard.IsKeyDown(Key.Space)) return;
+                                                                       if (!Keyboard.IsKeyDown(Key.Space)) return;
 
                                                                        if (_viewModel.CanAddBullet)
                                                                        {
@@ -109,17 +114,17 @@ namespace SpaceWarrior
 
                                                                            _viewModel.AddBulletIfPossible(bulletActions.Item1, bulletActions.Item2, bulletActions.Item3);
                                                                        }
-                                                                       
+
                                                                        var c =
                                                                            MainCanvas.Children.OfType<Rectangle>()
                                                                                .Count();
                                                                        inf.Content = c.ToString();
                                                                    });
-                                                     
+
                                              }
                                              catch (TaskCanceledException)
                                              {
-                                               
+
                                              }
 
                                              Thread.Sleep(10);
@@ -148,10 +153,10 @@ namespace SpaceWarrior
             {
                 //litenerTask abgebrochen
             }
-            
+
         }
 
-        
-      
+
+
     }
 }
