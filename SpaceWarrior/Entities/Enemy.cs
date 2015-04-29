@@ -12,6 +12,7 @@ namespace SpaceWarrior.Entities
     {
         private int Hits { get; set; }
         private int MaxHits { get; set; }
+        private Action _removeEnemy;
 
         public Enemy(
             double posX,
@@ -22,8 +23,10 @@ namespace SpaceWarrior.Entities
             double speedY,
             Action<double> moveHitBoxX,
             Action<double> moveHitBoxY,
+            Action removeEnemy,
             int maxHits) : base(posX, posY, width, height, speedX, speedY, moveHitBoxX, moveHitBoxY)
         {
+            removeEnemy = _removeEnemy;
             MaxHits = maxHits;
             var rnd = new Random();
             var rndVal = (rnd.NextDouble()*100);
