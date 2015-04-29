@@ -19,12 +19,12 @@ namespace SpaceWarrior
     /// </summary>
     public partial class MenuWindow : Window
     {
-        public MenuWindow(Action onExit, Action onResume)
+        public MenuWindow(Action<MenuWindow> onExit, Action<MenuWindow> onResume)
         {
             InitializeComponent();
 
-            this.BtnExit.Click += (s, a) => onExit();
-            this.BtnResume.Click += (s, a) => onResume();
+            this.BtnExit.Click += (s, a) => onExit(this);
+            this.BtnResume.Click += (s, a) => onResume(this);
 
             this.BtnExit.Focus();
         }
