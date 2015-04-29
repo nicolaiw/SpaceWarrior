@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using SpaceWarrior.ViewModels;
+using SpaceWarrior.Entities;
 
 namespace SpaceWarrior
 {
@@ -45,7 +46,8 @@ namespace SpaceWarrior
                 (d) => Dispatcher.Invoke(() => Canvas.SetLeft(PlayerModelHitBox, d)),
                 (d) => Dispatcher.Invoke(() => Canvas.SetTop(PlayerModelHitBox, d)),
                 _bulletImg.Width,
-                _bulletImg.Height);
+                _bulletImg.Height,
+                GetEnemy);
 
             _cts = new CancellationTokenSource();
             _ct = _cts.Token;
@@ -86,9 +88,54 @@ namespace SpaceWarrior
             //Canvas.SetTop(bullet, Canvas.GetTop(PlayerModelHitBox));
 
             return new Tuple<Action<double>, Action<double>, Action>(
-                (d) => Dispatcher.Invoke(() => Canvas.SetLeft(bullet, d)),
-                (d) => Dispatcher.Invoke(() => Canvas.SetTop(bullet, d)),
+                d => Dispatcher.Invoke(() => Canvas.SetLeft(bullet, d)),
+                d => Dispatcher.Invoke(() => Canvas.SetTop(bullet, d)),
                 () => Dispatcher.Invoke(() => MainCanvas.Children.Remove(bullet)));
+        }
+
+        //kleine Hilfsmethode
+        private Enemy GetEnemy(double posX, double posY, double speedX, double speedY, int maxHits)
+        {
+            Rectangle enemy = null;
+            BitmapImage enemyImage = null;
+            double enemyHight = 0;
+            double enemyWidth = 0;
+
+            Dispatcher.Invoke(() => enemyImage = new BitmapImage(new Uri(@"Images\enemy.png", UriKind.Relative)));
+            Dispatcher.Invoke(() => enemyHight = enemyImage.Height);
+            Dispatcher.Invoke(() => enemyWidth = enemyImage.Width);
+
+            Dispatcher.Invoke(() =>
+            {
+                enemy = new Rectangle
+                {
+                    Fill = new ImageBrush(enemyImage),
+                    Height = enemyHight,
+                    Width = enemyWidth
+                };
+            });
+
+            Dispatcher.Invoke(() => MainCanvas.Children.Add(enemy));
+            Dispatcher.Invoke(() => Canvas.SetZIndex(enemy, 0));
+
+            Enemy enemyModel = null;
+            Dispatcher.Invoke(() =>
+            {
+                enemyModel = new Enemy(
+                    posX,
+                    posY,
+                    enemyImage.Width,
+                    enemyImage.Height,
+                    speedX,
+                    speedY,
+                    d => Dispatcher.Invoke(() => Canvas.SetLeft(enemy, d)),
+                    d => Dispatcher.Invoke(() => Canvas.SetTop(enemy, d)),
+                    () => Dispatcher.Invoke(() => MainCanvas.Children.Remove(enemy)),
+                    maxHits);
+            });
+
+
+            return enemyModel;
         }
 
         public void RunKeyListener()

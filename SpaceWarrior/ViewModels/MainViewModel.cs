@@ -13,6 +13,9 @@ namespace SpaceWarrior.ViewModels
     {
         private Player Player { get; set; }
         private readonly List<Bullet> _bullets;
+        private readonly List<Enemy> _enemies;
+        //                    posX,   posY,   speedX, speedY, MaxHits
+        private readonly Func<double, double, double, double, int, Enemy> _createEnemy; 
 
         public double BulletWidth { get; private set; }
         public double BulletHeight { get; private set; }
@@ -29,15 +32,25 @@ namespace SpaceWarrior.ViewModels
             Action<double> movePlayerX,
             Action<double> movePlayerY,
             double bulletWidth,
-            double bulletHeigth)
+            double bulletHeigth,
+            //   posX,   posY,   speedX, speedY, MaxHits
+            Func<double, double, double, double, int, Enemy> createEnemy)
         {
             Player = new Player(playerPosX, playerPosY, playerWidth, playerHeight, playerSpeedX, playerSpeedY, movePlayerX, movePlayerY);
 
             WorldWidth = worldWidth;
             WorldHeight = worldHeight;
             _bullets = new List<Bullet>();
+            _enemies = new List<Enemy>();
             BulletWidth = bulletWidth;
             BulletHeight = bulletHeigth;
+            _createEnemy = createEnemy;
+        }
+
+        //Wrapper um die createEnemyFunc etwas leserlicher zu machen
+        private Enemy CreateEnemy(double posX, double posY, double speedX, double speedY, int maxHits)
+        {
+            return _createEnemy(posX, posY, speedX, speedY, maxHits);
         }
 
         private static double GetCurrentMilli()
@@ -77,6 +90,9 @@ namespace SpaceWarrior.ViewModels
                                       //Dadurch bewegt sich der player auf jeder Hardware gleich schnell (wenn auch vll. ruckeliger)
                                       var lastFrame = GetCurrentMilli();
 
+                                      //Testgegner
+                                      _enemies.Add(CreateEnemy(WorldWidth, WorldHeight / 2, 10, 10, 1));
+
                                       while (true)
                                       {
                                           var thisFrame = GetCurrentMilli();
@@ -86,6 +102,7 @@ namespace SpaceWarrior.ViewModels
 
                                           Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth, WorldHeight);
                                           UpdateBullets(timeSinceLastFrame);
+                                          UpdateEnemies(timeSinceLastFrame);
 
                                           Thread.Sleep(15);
                                       }
@@ -103,11 +120,22 @@ namespace SpaceWarrior.ViewModels
         public bool Right { get; set; }
         public bool Space { get; set; }
 
-        public void UpdateBullets(double timeSinceLastFram)
+        public void UpdateBullets(double timeSinceLastFrame)
         {
+            //TODO: was passiert wenn während der loop neue bullets hinzukommen ?
+            //foreach läuft auch Exception
             for (int i = 0; i < _bullets.Count; i++)
             {
-                _bullets[i].Update(timeSinceLastFram, WorldWidth);
+                _bullets[i].Update(timeSinceLastFrame, WorldWidth);
+            }
+        }
+
+        public void UpdateEnemies(double timeSinceLastFrame)
+        {
+            //siehe TODO UpdateBullets
+            for (int i = 0; i < _enemies.Count; i++)
+            {
+                //_enemies[i].Update(timeSinceLastFrame, Player.PosX, Player.PosY);
             }
         }
 
