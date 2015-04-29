@@ -62,8 +62,8 @@ namespace SpaceWarrior
             if (e.Key == Key.Escape)
             {
                 var menuCtrl = new MenuWindow(
-                    () => MessageBox.Show("Exit"),
-                    () => MessageBox.Show("Resume")
+                    menuWindow => Application.Current.Shutdown(),
+                    menuWindow => menuWindow.Close()
                     );
                 menuCtrl.ShowDialog();
             }
