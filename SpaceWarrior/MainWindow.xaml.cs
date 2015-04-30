@@ -24,12 +24,14 @@ namespace SpaceWarrior
         private readonly CancellationToken _ct;
         private Task _listenerTask;
         private readonly BitmapImage _bulletImg;
+        private bool _runKeyListener;
         // http://stackoverflow.com/questions/19261840/how-to-achieve-a-background-image-continuous-move-in-wpf
 
         public MainWindow()
         {
             InitializeComponent();
             _bulletImg = new BitmapImage(new Uri(@"Images\bullet.png", UriKind.Relative));
+            _runKeyListener = true;
 
             this.WindowStyle = WindowStyle.None;
             this.WindowState = WindowState.Maximized;
@@ -64,7 +66,11 @@ namespace SpaceWarrior
             if (e.Key == Key.Escape)
             {
                 var menuCtrl = new MenuWindow(
-                    menuWindow => Application.Current.Shutdown(),
+                    menuWindow =>
+                    {
+                        //TODO: sauber beenden --> TaskCancelation
+                        Application.Current.Shutdown(); 
+                    },
                     menuWindow => menuWindow.Close()
                     );
                 menuCtrl.ShowDialog();
@@ -142,7 +148,7 @@ namespace SpaceWarrior
         {
             _listenerTask = new Task(() =>
                                      {
-                                         while (true)
+                                         while (_runKeyListener)
                                          {
                                              try
                                              {
@@ -190,6 +196,7 @@ namespace SpaceWarrior
 
         private void GameClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            _runKeyListener = false;
             _cts.Cancel();
 
             try
@@ -200,6 +207,16 @@ namespace SpaceWarrior
             {
                 //litenerTask abgebrochen
             }
+
+            try
+            {
+                _viewModel.StopWorker();
+            }
+            catch (OperationCanceledException)
+            {
+                
+            }
+
 
         }
 
