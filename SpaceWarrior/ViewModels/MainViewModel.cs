@@ -117,8 +117,7 @@ namespace SpaceWarrior.ViewModels
                                               _timeSinceLastShot += timeSinceLastFrame;
                                               lastFrame = thisFrame;
 
-                                              Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth,
-                                                  WorldHeight);
+                                              Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth, WorldHeight);
                                               UpdateBullets(timeSinceLastFrame);
                                               UpdateEnemies(timeSinceLastFrame);
 

@@ -152,13 +152,24 @@ namespace SpaceWarrior
                                          {
                                              try
                                              {
-                                                 Dispatcher.Invoke(() => _viewModel.Up = Keyboard.IsKeyDown(Key.W));
-                                                 Dispatcher.Invoke(() => _viewModel.Left = Keyboard.IsKeyDown(Key.A));
-                                                 Dispatcher.Invoke(() => _viewModel.Down = Keyboard.IsKeyDown(Key.S));
-                                                 Dispatcher.Invoke(() => _viewModel.Right = Keyboard.IsKeyDown(Key.D));
+                                                 //Dispatcher.Invoke(() => _viewModel.Up = Keyboard.IsKeyDown(Key.W));
+                                                 //Dispatcher.Invoke(() => _viewModel.Left = Keyboard.IsKeyDown(Key.A));
+                                                 //Dispatcher.Invoke(() => _viewModel.Down = Keyboard.IsKeyDown(Key.S));
+                                                 //Dispatcher.Invoke(() => _viewModel.Right = Keyboard.IsKeyDown(Key.D));
 
                                                  Dispatcher.Invoke(() =>
-                                                                   {
+                                                 {
+
+                                                     _viewModel.Up = Keyboard.IsKeyDown(Key.W);
+                                                     _viewModel.Left = Keyboard.IsKeyDown(Key.A);
+                                                     _viewModel.Down = Keyboard.IsKeyDown(Key.S);
+                                                     _viewModel.Right = Keyboard.IsKeyDown(Key.D);
+
+                                                                       var c =
+                                                                           MainCanvas.Children.OfType<Rectangle>()
+                                                                               .Count();
+                                                                       inf.Content = c + " objects on Sceen";
+
                                                                        if (!Keyboard.IsKeyDown(Key.Space)) return;
 
                                                                        if (_viewModel.CanAddBullet)
@@ -168,10 +179,7 @@ namespace SpaceWarrior
                                                                            _viewModel.AddBulletIfPossible(bulletActions.Item1, bulletActions.Item2, bulletActions.Item3);
                                                                        }
 
-                                                                       var c =
-                                                                           MainCanvas.Children.OfType<Rectangle>()
-                                                                               .Count();
-                                                                       inf.Content = c.ToString();
+                                                                       
                                                                    });
 
                                              }

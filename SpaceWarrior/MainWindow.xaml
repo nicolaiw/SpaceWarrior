@@ -32,7 +32,7 @@
                     <ImageBrush x:Name="ModelImage" ImageSource="Images/warrior.png"/>
                 </Rectangle.Fill>
             </Rectangle>
-            <Label x:Name="inf" Content="0" Canvas.Left="222" Canvas.Top="135" Width="70" Foreground="#FFF5F0F0"/>
+            <Label x:Name="inf" Content="0" Canvas.Left="110" Canvas.Top="10" Width="118" Foreground="#FFF5F0F0"/>
         </Canvas>
 
 
