@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SpaceWarrior.Entities;
@@ -15,7 +12,12 @@ namespace SpaceWarrior.ViewModels
         private readonly List<Bullet> _bullets;
         private readonly List<Enemy> _enemies;
         //                    posX,   posY,   speedX, speedY, MaxHits
-        private readonly Func<double, double, double, double, int, Enemy> _createEnemy; 
+        private readonly Func<double, double, double, double, int, Enemy> _createEnemy;
+        private bool _runWorkerLoop;
+        private Task _workerTask;
+        private readonly CancellationTokenSource _cts;
+        private readonly CancellationToken _ct;
+        
 
         public double BulletWidth { get; private set; }
         public double BulletHeight { get; private set; }
@@ -45,6 +47,9 @@ namespace SpaceWarrior.ViewModels
             BulletWidth = bulletWidth;
             BulletHeight = bulletHeigth;
             _createEnemy = createEnemy;
+            _runWorkerLoop = true;
+            _cts = new CancellationTokenSource();
+            _ct = _cts.Token;
         }
 
         //Wrapper um die createEnemyFunc etwas leserlicher zu machen
@@ -81,32 +86,53 @@ namespace SpaceWarrior.ViewModels
         private const double ShotFrequency = 0.1; //Frquenz ist eigentlich das falsche Wort hier
         private double _timeSinceLastShot = 0;
 
+        public void StopWorker()
+        {
+            _runWorkerLoop = false;
+            _cts.Cancel();
+            _workerTask.Wait(_ct);
+        }
 
         public void RunWorker()
         {
-            Task.Factory.StartNew(() =>
+           _workerTask = new Task(() =>
                                   {
-                                      //Berechnung anhand der Zeit die der Rechner für das Berechnenn und Zeichnen braucht.
-                                      //Dadurch bewegt sich der player auf jeder Hardware gleich schnell (wenn auch vll. ruckeliger)
-                                      var lastFrame = GetCurrentMilli();
-
-                                      //Testgegner
-                                      _enemies.Add(CreateEnemy(WorldWidth, WorldHeight / 2, 10, 10, 1));
-
-                                      while (true)
+                                      try
                                       {
-                                          var thisFrame = GetCurrentMilli();
-                                          var timeSinceLastFrame = (thisFrame - lastFrame) / 1000.0;
-                                          _timeSinceLastShot += timeSinceLastFrame;
-                                          lastFrame = thisFrame;
+                                          //Berechnung anhand der Zeit die der Rechner für das Berechnenn und Zeichnen braucht.
+                                          //Dadurch bewegt sich der player auf jeder Hardware gleich schnell (wenn auch vll. ruckeliger)
+                                          var lastFrame = GetCurrentMilli();
 
-                                          Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth, WorldHeight);
-                                          UpdateBullets(timeSinceLastFrame);
-                                          UpdateEnemies(timeSinceLastFrame);
+                                          //Testgegner
+                                          _enemies.Add(CreateEnemy(0, 10, 100, 200, 1));
+                                          _enemies.Add(CreateEnemy(WorldWidth/2, 10, 20, 50, 1));
+                                          _enemies.Add(CreateEnemy(WorldWidth, 10, 50, 30, 1));
 
-                                          Thread.Sleep(15);
+                                          while (_runWorkerLoop)
+                                          {
+                                              _ct.ThrowIfCancellationRequested();
+
+                                              var thisFrame = GetCurrentMilli();
+                                              var timeSinceLastFrame = (thisFrame - lastFrame)/1000.0;
+                                              _timeSinceLastShot += timeSinceLastFrame;
+                                              lastFrame = thisFrame;
+
+                                              Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth,
+                                                  WorldHeight);
+                                              UpdateBullets(timeSinceLastFrame);
+                                              UpdateEnemies(timeSinceLastFrame);
+
+                                              Thread.Sleep(15);
+                                          }
                                       }
-                                  });
+                                      catch (TaskCanceledException)
+                                      {
+                                      }
+                                      
+                                      
+                                  }, _ct);
+
+            _workerTask.Start();
         }
 
         private void RemoveBullet(object sender, EventArgs e)
@@ -135,7 +161,7 @@ namespace SpaceWarrior.ViewModels
             //siehe TODO UpdateBullets
             for (int i = 0; i < _enemies.Count; i++)
             {
-                //_enemies[i].Update(timeSinceLastFrame, Player.PosX, Player.PosY);
+                _enemies[i].Update(timeSinceLastFrame, Player.PosX, Player.PosY);
             }
         }
 

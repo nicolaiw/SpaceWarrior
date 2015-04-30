@@ -10,7 +10,7 @@ namespace SpaceWarrior.Entities
     public class Bullet : ModelBase
     {
         public event EventHandler<EventArgs> BulletOutOfScope;
-        private Action RemoveBullet;
+        private readonly Action _removeBullet;
 
         public Bullet(
             double posX,
@@ -25,7 +25,7 @@ namespace SpaceWarrior.Entities
             Action removeBullet)
             : base(posX, posY, width, height, speedX, speedY, moveHitBoxX, moveHitBoxY)
         {
-            RemoveBullet = removeBullet;
+            _removeBullet = removeBullet;
         }
 
         public void Update(double timeSinceLastFrame, double wolrdWidth)
@@ -34,7 +34,7 @@ namespace SpaceWarrior.Entities
 
             if (PosX > wolrdWidth)
             {
-                RemoveBullet();
+                _removeBullet();
                 this.MoveHitBoxX = null;
                 this.MoveHitBoxY = null;
 
