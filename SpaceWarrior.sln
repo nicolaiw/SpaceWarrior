@@ -3,7 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceWarrior", "SpaceWarrior\SpaceWarrior.csproj", "{883AA6D3-0C1B-4202-B8B3-A4145665EAE2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{3FB1B6B3-483E-427E-BCBA-D1B48E8B7985}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2604EDE7-8DC6-4A3E-AB69-A8532DE9DB5E}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+		build.fsx = build.fsx
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceWarrior", "src\SpaceWarrior\SpaceWarrior.csproj", "{883AA6D3-0C1B-4202-B8B3-A4145665EAE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
