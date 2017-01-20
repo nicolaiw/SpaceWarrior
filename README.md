@@ -19,7 +19,7 @@ The game loop is aware of the time the client needs to calculate and draw
 the objects (Player, Enemies, Bullets, ...). This is needed for hardware independent
 speed of the game objects. (See ViewModels.MainViewModel.RunWorker())
 
-# Implementation of the enemies movement (see Entities.Enemy.Update())
+# Implementation of the enemies movement
 The enemies movement is implemented through vector calculations.
 The goal is that the enmeies moves to our player for with a given speed.
 
@@ -55,6 +55,8 @@ speedY = -0.24 * (speedY * timeSinceLastFrame)
 
 EnemyPosX += speedX
 EnemyPosY += speedY
+
+(see Entities.Enemy.Update())
 
 # TODO's and 'nice to have'
 + Add collision detection (bullets, enemies, etc.)
