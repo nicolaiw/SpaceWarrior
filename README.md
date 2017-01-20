@@ -7,12 +7,12 @@ Game implemented with WPF's Canvas Control.
 3. have fun
 
 # Control the Player
-move up:    W
-move left:  A
-move down:  S
-move right: D
-shoot:		Space
-menu:		ESC
+* move up:    W
+* move left:  A
+* move down:  S
+* move right: D
+* shoot:		Space
+* menu:		ESC
 
 # Introducing timeSinceLastFrame
 The game loop is aware of the time the client needs to calculate and draw
