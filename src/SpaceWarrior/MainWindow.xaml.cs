@@ -37,18 +37,31 @@ namespace SpaceWarrior
             this.WindowState = WindowState.Maximized;
 
             _viewModel = new MainViewModel(
+                // playerPosX
                 0.0,
-                (this.Height / 2) - (_bulletImg.Height / 2),
+                // PlayerPosY
+                (this.Height / 2) - (this.PlayerModelHitBox.Height / 2),
+                // playerWidth
                 PlayerModelHitBox.Width,
+                // playerHeight
                 PlayerModelHitBox.Height,
-                792.0,
-                569.0,
+                // worldWith
+                this.Width,
+                // worldHeight
+                this.Height,
+                // playerSpeedX
                 600.0,
+                // playerSpeedY
                 600.0,
+                // movePlayerX
                 (d) => Dispatcher.Invoke(() => Canvas.SetLeft(PlayerModelHitBox, d)),
+                // movePayerY
                 (d) => Dispatcher.Invoke(() => Canvas.SetTop(PlayerModelHitBox, d)),
+                // bulletWidth
                 _bulletImg.Width,
+                // bulletHeigth
                 _bulletImg.Height,
+                // factory method for creating enemies
                 GetEnemy);
 
             _cts = new CancellationTokenSource();
@@ -61,15 +74,15 @@ namespace SpaceWarrior
             RunKeyListener();
         }
 
-        void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
                 var menuCtrl = new MenuWindow(
                     menuWindow =>
                     {
-                        //TODO: sauber beenden --> TaskCancelation
-                        Application.Current.Shutdown(); 
+                        // TODO: sauber beenden --> TaskCancelation
+                        Application.Current.Shutdown();
                     },
                     menuWindow => menuWindow.Close()
                     );
@@ -77,15 +90,15 @@ namespace SpaceWarrior
             }
         }
 
-        //kleine Hilfsmethode
+        // Littel helper
         private Tuple<Action<double>, Action<double>, Action> GetNewBulletModelMoveActions()
         {
             var bullet = new Rectangle
-                         {
-                             Fill = new ImageBrush(_bulletImg),
-                             Height = _bulletImg.Height,
-                             Width = _bulletImg.Width
-                         };
+            {
+                Fill = new ImageBrush(_bulletImg),
+                Height = _bulletImg.Height,
+                Width = _bulletImg.Width
+            };
 
 
             MainCanvas.Children.Add(bullet);
@@ -99,7 +112,7 @@ namespace SpaceWarrior
                 () => Dispatcher.Invoke(() => MainCanvas.Children.Remove(bullet)));
         }
 
-        //kleine Hilfsmethode
+        // Little helper
         private Enemy GetEnemy(double posX, double posY, double speedX, double speedY, int maxHits)
         {
             Rectangle enemy = null;
@@ -140,61 +153,52 @@ namespace SpaceWarrior
                     maxHits);
             });
 
-
             return enemyModel;
         }
 
         public void RunKeyListener()
         {
-            _listenerTask = new Task(() =>
-                                     {
-                                         while (_runKeyListener)
-                                         {
-                                             try
-                                             {
-                                                 //Dispatcher.Invoke(() => _viewModel.Up = Keyboard.IsKeyDown(Key.W));
-                                                 //Dispatcher.Invoke(() => _viewModel.Left = Keyboard.IsKeyDown(Key.A));
-                                                 //Dispatcher.Invoke(() => _viewModel.Down = Keyboard.IsKeyDown(Key.S));
-                                                 //Dispatcher.Invoke(() => _viewModel.Right = Keyboard.IsKeyDown(Key.D));
+            _listenerTask =
+                new Task(() =>
+                {
+                    while (_runKeyListener)
+                    {
+                        try
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                _viewModel.Up = Keyboard.IsKeyDown(Key.W);
+                                _viewModel.Left = Keyboard.IsKeyDown(Key.A);
+                                _viewModel.Down = Keyboard.IsKeyDown(Key.S);
+                                _viewModel.Right = Keyboard.IsKeyDown(Key.D);
 
-                                                 Dispatcher.Invoke(() =>
-                                                 {
+                                /* Check if the objects (eg. Bullets) are correctyl get removed */
+                                var c =
+                                    MainCanvas.Children.OfType<Rectangle>()
+                                        .Count();
+                                inf.Content = c + " objects on Sceen";
 
-                                                     _viewModel.Up = Keyboard.IsKeyDown(Key.W);
-                                                     _viewModel.Left = Keyboard.IsKeyDown(Key.A);
-                                                     _viewModel.Down = Keyboard.IsKeyDown(Key.S);
-                                                     _viewModel.Right = Keyboard.IsKeyDown(Key.D);
+                                if (!Keyboard.IsKeyDown(Key.Space)) return;
 
-                                                                       var c =
-                                                                           MainCanvas.Children.OfType<Rectangle>()
-                                                                               .Count();
-                                                                       inf.Content = c + " objects on Sceen";
+                                if (_viewModel.CanAddBullet)
+                                {
+                                    var bulletActions = GetNewBulletModelMoveActions();
 
-                                                                       if (!Keyboard.IsKeyDown(Key.Space)) return;
+                                    _viewModel.AddBulletIfPossible(bulletActions.Item1, bulletActions.Item2, bulletActions.Item3);
+                                }
+                            });
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            // Cancelation Requested
+                        }
 
-                                                                       if (_viewModel.CanAddBullet)
-                                                                       {
-                                                                           var bulletActions = GetNewBulletModelMoveActions();
-
-                                                                           _viewModel.AddBulletIfPossible(bulletActions.Item1, bulletActions.Item2, bulletActions.Item3);
-                                                                       }
-
-                                                                       
-                                                                   });
-
-                                             }
-                                             catch (TaskCanceledException)
-                                             {
-
-                                             }
-
-                                             Thread.Sleep(10);
-                                         }
-                                     }, _ct);
+                        Thread.Sleep(10);
+                    }
+                }, _ct);
 
             _listenerTask.Start();
         }
-
 
         private void WorldSizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -213,7 +217,7 @@ namespace SpaceWarrior
             }
             catch (OperationCanceledException)
             {
-                //litenerTask abgebrochen
+                // _litenerTask abgebrochen
             }
 
             try
@@ -222,9 +226,8 @@ namespace SpaceWarrior
             }
             catch (OperationCanceledException)
             {
-                
+                // TODO: implement better way to quit the game
             }
-
 
         }
 

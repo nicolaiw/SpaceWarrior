@@ -19,7 +19,7 @@ namespace SpaceWarrior.Entities
             double speedY,
             double width,
             double height,
-            //Rectangle hitBox,
+            // Rectangle hitBox,
             Action<double> moveHitBoxX,
             Action<double> moveHitBoxY,
             Action removeBullet)
@@ -38,9 +38,8 @@ namespace SpaceWarrior.Entities
                 this.MoveHitBoxX = null;
                 this.MoveHitBoxY = null;
 
-                var ev = BulletOutOfScope;
-                if(ev != null)
-                    ev(this, new EventArgs());
+                // ?-Operator is ThreadSafe
+                BulletOutOfScope?.Invoke(this, new EventArgs());
             }
         }
     }

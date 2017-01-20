@@ -30,20 +30,21 @@ namespace SpaceWarrior.Entities
 
         public void Update(double timeSinceLastFrame, double playerPosX, double playerPosY)
         {
-            //Vektor basiertes movement http://www.youtube.com/watch?v=hznpuFrAaEc&index=18&list=PL2C21DE50640DBD4D
+            // Vektor basiertes movement http://www.youtube.com/watch?v=hznpuFrAaEc&index=18&list=PL2C21DE50640DBD4D
 
-            //Vektor der in richtung des Spielers zeigt
+            // Vektor der in richtung des Spielers zeigt
             var speedX = playerPosX - PosX;
             var speedY = playerPosY - PosY;
 
-            //Vekorlänge (Pythagoras)
+            // Vekorlänge (Pythagoras)
             var speed = Math.Sqrt(Math.Pow(speedX,2)+Math.Pow(speedY,2));
 
-            //Vektor normalisieren, indem man Ihn durch seine länge teilt
+            // Vektor normalisieren, indem man Ihn durch seine länge teilt
             speedX /= speed;
             speedY /= speed;
 
-            //somit ist der speed nicht mehr von der Länge des Vektors abhängig, sondern von den von uns vorgegebenen Werten
+            // somit ist der speed nicht mehr von der Länge des Vektors abhängig,
+            // sondern von den von uns vorgegebenen Werten
             speedX *= SpeedX*timeSinceLastFrame;
             speedY *= SpeedY*timeSinceLastFrame;
 

@@ -19,7 +19,7 @@ Target "BuildApp" (fun _ ->
 )
 
 Target "Default" (fun _ ->
-    trace "Hello World from FAKE"
+    trace "Build ..."
 )
 
 // Dependencies
