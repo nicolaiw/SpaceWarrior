@@ -32,9 +32,9 @@ The goal is that the enmeies moves to our player for with a given speed.
 * timeSinceLastFrame   = 0.5
 
 ### Caltulating the vector pointed from the enemy to the player
-vR = vP - vE
-vR = (1,2) - (5,3)
-vR = (-4,-1)
+* vR = vP - vE
+* vR = (1,2) - (5,3)
+* vR = (-4,-1)
 
 vR is the vector wich points from the enemy to the player.
 Because vectors not just gives us the direction but also the speed by its lenght
@@ -50,11 +50,11 @@ sqrt(-4² + -1²) = srq(17) = ~4.12
 ### Calculating the speedX and speedY
 Now we are able to define our own speed.
 
-speedX = 0.97 * (speedX * timeSinceLastFrame)
-speedY = -0.24 * (speedY * timeSinceLastFrame)
+* speedX = 0.97 * (speedX * timeSinceLastFrame)
+* speedY = -0.24 * (speedY * timeSinceLastFrame)
 
-EnemyPosX += speedX
-EnemyPosY += speedY
+* EnemyPosX += speedX
+* EnemyPosY += speedY
 
 (see Entities.Enemy.Update())
 
