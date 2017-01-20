@@ -17,10 +17,23 @@ namespace SpaceWarrior.ViewModels
         private Task _workerTask;
         private readonly CancellationTokenSource _cts;
         private readonly CancellationToken _ct;
-        
+
+        private const double ShotFrequency = 0.1; // Frquenz ist eigentlich das falsche Wort hier
+        private double _timeSinceLastShot = 0;
 
         public double BulletWidth { get; private set; }
         public double BulletHeight { get; private set; }
+
+        public bool Up { get; set; }
+        public bool Down { get; set; }
+        public bool Left { get; set; }
+        public bool Right { get; set; }
+        public bool Space { get; set; }
+
+        public bool CanAddBullet
+        {
+            get { return _timeSinceLastShot >= ShotFrequency; }
+        }
 
         public MainViewModel(
             double playerPosX,
@@ -52,7 +65,7 @@ namespace SpaceWarrior.ViewModels
             _ct = _cts.Token;
         }
 
-        //Wrapper um die createEnemyFunc etwas leserlicher zu machen
+        // Wrapper um die createEnemyFunc etwas leserlicher zu machen
         private Enemy CreateEnemy(double posX, double posY, double speedX, double speedY, int maxHits)
         {
             return _createEnemy(posX, posY, speedX, speedY, maxHits);
@@ -65,11 +78,7 @@ namespace SpaceWarrior.ViewModels
             return span.TotalMilliseconds;
         }
 
-        public bool CanAddBullet
-        {
-            get { return _timeSinceLastShot >= ShotFrequency; }
-        }
-
+        
         public void AddBulletIfPossible(Action<double> moveBulletX, Action<double> moveBulletY, Action removeBullet)
         {
             if (!CanAddBullet) return;
@@ -83,9 +92,6 @@ namespace SpaceWarrior.ViewModels
             _timeSinceLastShot = 0;
         }
 
-        private const double ShotFrequency = 0.1; //Frquenz ist eigentlich das falsche Wort hier
-        private double _timeSinceLastShot = 0;
-
         public void StopWorker()
         {
             _runWorkerLoop = false;
@@ -95,41 +101,53 @@ namespace SpaceWarrior.ViewModels
 
         public void RunWorker()
         {
-           _workerTask = new Task(() =>
-                                  {
-                                      try
-                                      {
-                                          //Berechnung anhand der Zeit die der Rechner für das Berechnenn und Zeichnen braucht.
-                                          //Dadurch bewegt sich der player auf jeder Hardware gleich schnell (wenn auch vll. ruckeliger)
-                                          var lastFrame = GetCurrentMilli();
+            _workerTask =
+                new Task(() =>
+                {
+                    try
+                    {
+                       // Berechnung anhand der Zeit die der Rechner für das Berechnenn und Zeichnen braucht.
+                       // Dadurch bewegt sich der player auf jeder Hardware gleich schnell (wenn auch vll. ruckeliger)
+                       var lastFrame = GetCurrentMilli();
 
-                                          //Testgegner
-                                          _enemies.Add(CreateEnemy(0, 10, 100, 200, 1));
-                                          _enemies.Add(CreateEnemy(WorldWidth/2, 10, 20, 50, 1));
-                                          _enemies.Add(CreateEnemy(WorldWidth, 10, 50, 30, 1));
+                       // Testgegner
+                       _enemies.Add(CreateEnemy(0, 10, 100, 200, 1));
+                        _enemies.Add(CreateEnemy(WorldWidth / 2, 10, 20, 50, 1));
+                        _enemies.Add(CreateEnemy(WorldWidth, 10, 50, 30, 1));
 
-                                          while (_runWorkerLoop)
-                                          {
-                                              _ct.ThrowIfCancellationRequested();
+                       /*
+                        *        GAME LOOP 
+                        */
+                        while (_runWorkerLoop)
+                        {
+                            _ct.ThrowIfCancellationRequested();
 
-                                              var thisFrame = GetCurrentMilli();
-                                              var timeSinceLastFrame = (thisFrame - lastFrame)/1000.0;
-                                              _timeSinceLastShot += timeSinceLastFrame;
-                                              lastFrame = thisFrame;
+                            var thisFrame = GetCurrentMilli();
+                            var timeSinceLastFrame = (thisFrame - lastFrame) / 1000.0;
 
-                                              Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth, WorldHeight);
-                                              UpdateBullets(timeSinceLastFrame);
-                                              UpdateEnemies(timeSinceLastFrame);
+                           /*
+                                 What if the player does not hit space for a bullet ?
+                                 --> potentionally double overflow !!
+                                 So just increase if !CanAddBullet
+                            */
+                            if (!CanAddBullet)
+                            {
+                                 _timeSinceLastShot += timeSinceLastFrame;
+                            }
+                            lastFrame = thisFrame;
 
-                                              Thread.Sleep(15);
-                                          }
-                                      }
-                                      catch (TaskCanceledException)
-                                      {
-                                      }
-                                      
-                                      
-                                  }, _ct);
+                            Player.Update(timeSinceLastFrame, Up, Down, Left, Right, WorldWidth, WorldHeight);
+                            UpdateBullets(timeSinceLastFrame);
+                            UpdateEnemies(timeSinceLastFrame);
+
+                            Thread.Sleep(15);
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                       // Canelation requested
+                   }
+                }, _ct);
 
             _workerTask.Start();
         }
@@ -139,16 +157,10 @@ namespace SpaceWarrior.ViewModels
             _bullets.Remove(sender as Bullet);
         }
 
-        public bool Up { get; set; }
-        public bool Down { get; set; }
-        public bool Left { get; set; }
-        public bool Right { get; set; }
-        public bool Space { get; set; }
-
         public void UpdateBullets(double timeSinceLastFrame)
         {
             //TODO: was passiert wenn während der loop neue bullets hinzukommen ?
-            //foreach läuft auch Exception
+            //foreach läuft auf Exception
             for (int i = 0; i < _bullets.Count; i++)
             {
                 _bullets[i].Update(timeSinceLastFrame, WorldWidth);
@@ -157,7 +169,6 @@ namespace SpaceWarrior.ViewModels
 
         public void UpdateEnemies(double timeSinceLastFrame)
         {
-            //siehe TODO UpdateBullets
             for (int i = 0; i < _enemies.Count; i++)
             {
                 _enemies[i].Update(timeSinceLastFrame, Player.PosX, Player.PosY);
@@ -201,7 +212,6 @@ namespace SpaceWarrior.ViewModels
                 OnPropertyChanged();
             }
         }
-
 
     }
 }
