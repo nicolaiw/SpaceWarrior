@@ -28,7 +28,7 @@ The goal is that the enmeies moves to our player for with a given speed.
 ### Given:
 * Players positon (vP) = (x=1, y=2)
 * Enemy positon (vE)   = (x=5, y=3)
-* speedX, speedY		 = 100 // Enemy speed x and y
+* speedX, speedY       = 100 // Enemy speed x and y
 * timeSinceLastFrame   = 0.5
 
 ### Caltulating the vector pointed from the enemy to the player
