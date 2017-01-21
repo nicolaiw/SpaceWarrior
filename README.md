@@ -64,8 +64,8 @@ Now we are able to define our own speed.
 + Random spawning of enemies
 + Stop game loop when the user is in the menu
 + Add sounds
-+ Add highscore
-+ Add dirrefent levels
++ Add High Score
++ Add different levels
 + Add different levels of difficulty
 + Add power-up's
 + Add different weapons
