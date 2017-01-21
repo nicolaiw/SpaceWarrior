@@ -21,7 +21,7 @@ speed of the game objects. (See ViewModels.MainViewModel.RunWorker())
 
 # Implementation of the enemies movement
 The enemies movement is implemented through vector calculations.
-The goal is that the enmeies moves to our player for with a given speed.
+The goal is that the enemies moves to our player with a given speed.
 
 ## Example:
 
