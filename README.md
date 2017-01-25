@@ -11,8 +11,8 @@ Game implemented with WPF's Canvas Control.
 * move left:  A
 * move down:  S
 * move right: D
-* shoot:		Space
-* menu:		ESC
+* shoot:      Space
+* menu:	      ESC
 
 # Introducing timeSinceLastFrame
 The game loop is aware of the time the client needs to calculate and draw
@@ -36,8 +36,8 @@ The goal is that the enemies moves to our player with a given speed.
 * vR = (1,2) - (5,3)
 * vR = (-4,-1)
 
-vR is the vector wich points from the enemy to the player.
-Because vectors not just gives us the direction but also the speed by its lenght
+vR is the vector which points from the enemy to the player.
+Because vectors not just give us the direction but also the speed by its lenght
 we have to normalize this vector to give it a length of 1. Otherwise the opponent would move slower,
 the closer he comes to the player. For this we need to calculate the current lenght with the theorem of Pythagoras.
 
@@ -67,6 +67,6 @@ Now we are able to define our own speed.
 + Add High Score
 + Add different levels
 + Add different levels of difficulty
-+ Add power-up's
++ Add power-ups
 + Add different weapons
 + CI (AppVeyor)
