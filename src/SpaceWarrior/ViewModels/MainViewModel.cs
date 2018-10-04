@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SpaceWarrior.Entities;
@@ -8,6 +9,8 @@ namespace SpaceWarrior.ViewModels
 {
     public class MainViewModel : PropertyChangedImplementation
     {
+
+        private Action<string> _log;
         private Player Player { get; set; }
         private readonly List<Bullet> _bullets;
         private readonly List<Enemy> _enemies;
@@ -49,7 +52,8 @@ namespace SpaceWarrior.ViewModels
             double bulletWidth,
             double bulletHeigth,
             //   posX,   posY,   speedX, speedY, MaxHits
-            Func<double, double, double, double, int, Enemy> createEnemy)
+            Func<double, double, double, double, int, Enemy> createEnemy,
+            Action<string> log)
         {
             Player = new Player(playerPosX, playerPosY, playerWidth, playerHeight, playerSpeedX, playerSpeedY, movePlayerX, movePlayerY);
 
@@ -63,6 +67,7 @@ namespace SpaceWarrior.ViewModels
             _runWorkerLoop = true;
             _cts = new CancellationTokenSource();
             _ct = _cts.Token;
+            _log = log;
         }
 
         // Wrapper um die createEnemyFunc etwas leserlicher zu machen
@@ -88,8 +93,57 @@ namespace SpaceWarrior.ViewModels
 
             var bullet = new Bullet(bulletPosX, bulletPosY, Player.SpeedX + 300.0, 0, BulletWidth, BulletHeight, moveBulletX, moveBulletY, removeBullet);
             _bullets.Add(bullet);
+            PlaySound(Properties.Resources.Shoot);
             bullet.BulletOutOfScope += RemoveBullet;
             _timeSinceLastShot = 0;
+        }
+
+        private void HitTest()
+        {
+            /* THIS IS NOT THE FINAL HIT TEST */
+
+            // TODO: maybe create a copy or loop backwards
+            for (int i = 0; i < _bullets.Count; i++)
+            {
+                var bullet = _bullets[i];
+                for (int j = 0; j < _enemies.Count; j++)
+                {
+                    var enemy = _enemies[j];
+
+                    var bulletX = Math.Round(bullet.PosX, MidpointRounding.AwayFromZero);
+                    var enemyX = Math.Round(enemy.PosX, MidpointRounding.AwayFromZero);
+                    var bulletY = Math.Round(bullet.PosY, MidpointRounding.AwayFromZero);
+                    var enemyY = Math.Round(enemy.PosY, MidpointRounding.AwayFromZero);
+
+                    var xDiff = Math.Abs(bulletX - enemyX);
+                    var yDiff = Math.Abs(bulletY - enemyY);
+
+                    if (xDiff <= bullet.Width && yDiff < bullet.Height)
+                    {
+                        _bullets.RemoveAt(i);
+                        bullet.Remove();
+                        i--;
+
+                        _enemies.RemoveAt(j);
+                        enemy.Hit();
+                        j--;
+
+                        PlaySound(Properties.Resources.Hit);
+
+                        break; // bullet destroyed ... do not test hits anymore for this bullet
+                    }
+                }
+            }
+        }
+
+        private void PlaySound(Stream soundStream)
+        {
+            using (soundStream)
+            using (var soundPlayer = new System.Media.SoundPlayer(soundStream))
+            {
+                soundPlayer.Play();
+                soundPlayer.Dispose();
+            }
         }
 
         public void StopWorker()
@@ -140,7 +194,9 @@ namespace SpaceWarrior.ViewModels
                             UpdateBullets(timeSinceLastFrame);
                             UpdateEnemies(timeSinceLastFrame);
 
-                            Thread.Sleep(15);
+                            HitTest();
+
+                            Thread.Sleep(10);
                         }
                     }
                     catch (TaskCanceledException)

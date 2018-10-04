@@ -62,7 +62,10 @@ namespace SpaceWarrior
                 // bulletHeigth
                 _bulletImg.Height,
                 // factory method for creating enemies
-                GetEnemy);
+                GetEnemy,
+                // log
+                str => { Dispatcher.Invoke(() => inf.Content = str); }
+                );
 
             _cts = new CancellationTokenSource();
             _ct = _cts.Token;

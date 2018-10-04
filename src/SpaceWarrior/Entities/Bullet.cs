@@ -42,6 +42,11 @@ namespace SpaceWarrior.Entities
                 BulletOutOfScope?.Invoke(this, new EventArgs());
             }
         }
+
+        public void Remove()
+        {
+            _removeBullet();
+        }
     }
 
 }

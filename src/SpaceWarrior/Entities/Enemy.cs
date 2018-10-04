@@ -4,7 +4,6 @@ namespace SpaceWarrior.Entities
 {
     public class Enemy : ModelBase
     {
-        private int Hits { get; set; }
         private int MaxHits { get; set; }
         private Action _removeEnemy;
 
@@ -51,5 +50,16 @@ namespace SpaceWarrior.Entities
             PosX += speedX;
             PosY += speedY;
         }
+
+        public void Hit()
+        {
+            this.MaxHits--;
+
+            if(this.MaxHits == 0)
+            {
+                _removeEnemy();
+            }
+        }
+
     }
 }

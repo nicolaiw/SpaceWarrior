@@ -66,6 +66,7 @@ x64/
 *.vssscc
 .builds
 .fake
+.vs
 
 # Visual C++ cache files
 ipch/
