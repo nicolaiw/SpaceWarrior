@@ -152,17 +152,45 @@ namespace SpaceWarrior
                     speedY,
                     d => Dispatcher.Invoke(() => Canvas.SetLeft(enemy, d)),
                     d => Dispatcher.Invoke(() => Canvas.SetTop(enemy, d)),
-                    () => Dispatcher.Invoke(() => MainCanvas.Children.Remove(enemy)),
+                    () => Dispatcher.Invoke(() =>
+                    {
+                        MainCanvas.Children.Remove(enemy);
+
+                        var explosion = new MediaElement
+                        {
+                            Source = new Uri(@"./Gifs/explosion.gif", UriKind.Relative),
+                            LoadedBehavior = MediaState.Play,
+                            UnloadedBehavior = MediaState.Close,
+                            Stretch = Stretch.Fill,
+                            Height = 100,
+                            Width = 100,
+                        };
+
+                        explosion.MediaEnded += (object sender, RoutedEventArgs e) =>
+                        {
+                            MainCanvas.Children.Remove(explosion);
+                        };
+
+                        var left = Canvas.GetLeft(enemy);
+                        var top = Canvas.GetTop(enemy);
+
+                        Canvas.SetLeft(explosion, left);
+                        Canvas.SetTop(explosion, top);
+
+                        MainCanvas.Children.Add(explosion);
+                    }
+                    ),
                     maxHits);
             });
 
             return enemyModel;
         }
 
+  
         public void RunKeyListener()
         {
             _listenerTask =
-                new Task(() =>
+                new Task(async () =>
                 {
                     while (_runKeyListener)
                     {
@@ -194,9 +222,10 @@ namespace SpaceWarrior
                         catch (TaskCanceledException)
                         {
                             // Cancelation Requested
+                            // Log Exception
                         }
 
-                        Thread.Sleep(10);
+                        await Task.Delay(10);
                     }
                 }, _ct);
 

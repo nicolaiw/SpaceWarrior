@@ -131,6 +131,9 @@
   <ItemGroup>
     <Content Include="Audio\Hit.wav" />
     <Content Include="Audio\Shoot.wav" />
+    <Content Include="Gifs\explosion.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Images\bullet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
