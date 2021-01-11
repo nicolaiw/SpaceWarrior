@@ -1,7 +1,7 @@
 # SpaceWarrior
 Game implemented with WPF's Canvas Control.
 
-# How to play/build
+# How to play/build (CURRENTLY NOT WORKING!!)
 1. Run build.cmd
 2. navigate to /build
 3. have fun
