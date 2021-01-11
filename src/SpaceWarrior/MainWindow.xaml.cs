@@ -156,28 +156,31 @@ namespace SpaceWarrior
                     {
                         MainCanvas.Children.Remove(enemy);
 
-                        var explosion = new MediaElement
-                        {
-                            Source = new Uri(@"./Gifs/explosion.gif", UriKind.Relative),
-                            LoadedBehavior = MediaState.Play,
-                            UnloadedBehavior = MediaState.Close,
-                            Stretch = Stretch.Fill,
-                            Height = 100,
-                            Width = 100,
-                        };
+                        var img = new Image();
+                        img.Height = 150;
+                        img.Width = 150;
 
-                        explosion.MediaEnded += (object sender, RoutedEventArgs e) =>
-                        {
-                            MainCanvas.Children.Remove(explosion);
-                        };
+                        var gif = new BitmapImage();
+                        gif.BeginInit();
+                        gif.UriSource = new Uri(@"Gifs/explosion.gif", UriKind.Relative);
+                        gif.EndInit();
+
+                        WpfAnimatedGif.ImageBehavior.SetAnimatedSource(img, gif);
+                        WpfAnimatedGif.ImageBehavior.SetAutoStart(img, true);
+                        WpfAnimatedGif.ImageBehavior.SetAnimationDuration(img, TimeSpan.FromSeconds(1));
+                        WpfAnimatedGif.ImageBehavior.AddAnimationCompletedHandler(img,
+                            (_, __) =>
+                            {
+                                MainCanvas.Children.Remove(img);
+                            });
 
                         var left = Canvas.GetLeft(enemy);
                         var top = Canvas.GetTop(enemy);
 
-                        Canvas.SetLeft(explosion, left);
-                        Canvas.SetTop(explosion, top);
+                        Canvas.SetLeft(img, left);
+                        Canvas.SetTop(img, top);
 
-                        MainCanvas.Children.Add(explosion);
+                        MainCanvas.Children.Add(img);
                     }
                     ),
                     maxHits);
@@ -186,7 +189,7 @@ namespace SpaceWarrior
             return enemyModel;
         }
 
-  
+
         public void RunKeyListener()
         {
             _listenerTask =

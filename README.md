@@ -59,14 +59,12 @@ Now we are able to define our own speed.
 (see Entities.Enemy.Update())
 
 # TODO's and 'nice to have'
-+ Add collision detection (bullets, enemies, etc.)
++ Make FAKE work again
 + Add animations for collisions
 + Random spawning of enemies
 + Stop game loop when the user is in the menu
-+ Add sounds
 + Add High Score
 + Add different levels
 + Add different levels of difficulty
 + Add power-ups
 + Add different weapons
-+ CI (AppVeyor)
