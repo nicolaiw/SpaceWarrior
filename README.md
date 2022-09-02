@@ -37,12 +37,12 @@ The goal is that the enemies moves to our player with a given speed.
 * vR = (-4,-1)
 
 vR is the vector which points from the enemy to the player.
-Because vectors not just give us the direction but also the speed by its lenght
+Because vectors not just give us the direction but also the speed by its length
 we have to normalize this vector to give it a length of 1. Otherwise the opponent would move slower,
 the closer he comes to the player. For this we need to calculate the current lenght with the theorem of Pythagoras.
 
 ### Calculating the length of vR
-sqrt(-4² + -1²) = srq(17) = ~4.12
+sqrt(-4Â² + -1Â²) = srq(17) = ~4.12
 
 ### Normalize vR by devide it by its length
 (-4,-1) : 4.12 = ~(0.97,-0.24)
